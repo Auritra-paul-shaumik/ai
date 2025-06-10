@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: nightbot-ai-chatbot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: OPENAI_API_KEY
+        sync: false  # This will prompt you to enter the value during deployment
