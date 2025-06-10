@@ -8,10 +8,15 @@ app = Flask(__name__)
 
 # === AI Configuration ===
 # Using Hugging Face Inference API (completely free)
-HF_API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
+# Using a better model for general questions
+HF_API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-large"
 HF_HEADERS = {
     "Authorization": "Bearer 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"  # Get free token from huggingface.co
 }
+
+# Alternative models you can try:
+# "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
+# "https://api-inference.huggingface.co/models/microsoft/DialoGPT-large"
 
 # Alternative: Use local Ollama (if you want to run locally)
 OLLAMA_URL = "http://localhost:11434/api/generate"
@@ -86,11 +91,6 @@ def query_ollama(question):
 def get_ai_response(question, username=""):
     """Get AI response with fallback options"""
     
-    # First check for simple/common responses
-    simple_resp = get_simple_response(question)
-    if simple_resp:
-        return simple_resp
-    
     # Try Hugging Face API first
     hf_response = query_huggingface(question)
     if hf_response and len(hf_response) > 10:  # Valid response
@@ -101,26 +101,13 @@ def get_ai_response(question, username=""):
     if ollama_response and len(ollama_response) > 10:
         return ollama_response
     
-    # Fallback responses for different question types
-    question_lower = question.lower()
+    # Only use simple responses as last resort if AI fails
+    simple_resp = get_simple_response(question)
+    if simple_resp:
+        return simple_resp
     
-    if any(word in question_lower for word in ['study', 'learn', 'exam', 'test']):
-        return "📚 For effective studying: break topics into chunks, use active recall, teach concepts to others, and take regular breaks. What specific subject are you working on?"
-    
-    elif any(word in question_lower for word in ['math', 'mathematics', 'calculate']):
-        return "🔢 Math tip: Practice problems step by step, understand the 'why' behind formulas, and don't rush. Would you like help with a specific math concept?"
-    
-    elif any(word in question_lower for word in ['science', 'physics', 'chemistry', 'biology']):
-        return "🔬 Science learning: Connect concepts to real-world examples, use diagrams/visuals, and practice explaining phenomena. What science topic interests you?"
-    
-    elif any(word in question_lower for word in ['time', 'schedule', 'plan']):
-        return "⏰ Time management: Use the Pomodoro technique (25min study + 5min break), prioritize important tasks, and set realistic daily goals!"
-    
-    elif any(word in question_lower for word in ['motivation', 'tired', 'stress']):
-        return "💪 Stay motivated: Remember your goals, celebrate small wins, take care of your health, and don't be too hard on yourself. You're doing great!"
-    
-    else:
-        return f"🤖 That's an interesting question! While I'd love to give you a detailed answer, I'm still learning. Try asking about study tips, subjects, or motivation - I'm great with those! 😊"
+    # Final fallback only if everything fails
+    return f"🤖 Sorry, I'm having trouble connecting to my AI brain right now. Please try again in a moment!"
 
 # === ROUTES ===
 
