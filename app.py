@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Using Hugging Face Inference API (completely free)
 HF_API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
 HF_HEADERS = {
-    "Authorization": "Bearer YOUR_HF_TOKEN_HERE"  # Get free token from huggingface.co
+    "Authorization": "Bearer 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"  # Get free token from huggingface.co
 }
 
 # Alternative: Use local Ollama (if you want to run locally)
